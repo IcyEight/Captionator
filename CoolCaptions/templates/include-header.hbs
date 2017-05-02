@@ -1,0 +1,136 @@
+{{define "header"}}
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Cool Captions</title>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+        <style>
+            .btn-file {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .btn-file input[type=file] {
+                position: absolute;
+                top: 0;
+                right: 0;
+                min-width: 100%;
+                min-height: 100%;
+                font-size: 100px;
+                text-align: right;
+                filter: alpha(opacity=0);
+                opacity: 0;
+                background: red;
+                cursor: inherit;
+                display: block;
+            }
+
+            input[readonly] {
+                background-color: white !important;
+                cursor: text !important;
+            }
+
+            .original-text--legend-block_anger-low {
+                background-color: #FFF;
+            }
+            .original-text--legend-block_anger-medium {
+                background-color: #FFA197; }
+            .original-text--legend-block_anger-high {
+                background-color: #E80521; }
+            .original-text--legend-block_disgust-low {
+                background-color: #FFF; }
+            .original-text--legend-block_disgust-medium {
+                background-color: #A779D8; }
+            .original-text--legend-block_disgust-high {
+                background-color: #592684; }
+            .original-text--legend-block_fear-low {
+                background-color: #FFF; }
+            .original-text--legend-block_fear-medium {
+                background-color: #7DB258; }
+            .original-text--legend-block_fear-high {
+                background-color: #325E2B; }
+            .original-text--legend-block_joy-low {
+                background-color: #FFF; }
+            .original-text--legend-block_joy-medium {
+                background-color: #FFF173; }
+            .original-text--legend-block_joy-high {
+                color: #000000;
+                background-color: #FFD629; }
+            .original-text--legend-block_sadness-low {
+                background-color: #FFF; }
+            .original-text--legend-block_sadness-medium {
+                background-color: #69C3E2; }
+            .original-text--legend-block_sadness-high {
+                background-color: #086DB2; }
+        </style>
+		<script>
+		    $(function() {
+                var ws = new WebSocket("ws://localhost:8080/ws");
+                var $ul = $('#msg-list');
+                ws.onmessage = function(m) {
+                    var data = JSON.parse(m.data),
+                            timestamps = data.results[0].alternatives[0].timestamps,
+                            start = timestamps[0][1],
+                            end = timestamps.slice(-1)[0][2],
+                            transcript = data.results[0].alternatives[0].transcript,
+                            text = start + "s - " + end + "s: " + transcript;
+
+                    var tone = JSON.parse(data.analysis).document_tone.tone_categories[0].tones
+                    var arr = Object.keys( tone ).map(function ( key ) { return tone[key]; });
+
+                    var max = arr[0];
+                    for (var i = 1; i < arr.length; i++) {
+                        if (arr[i].score > max.score) {
+                            max = arr[i];
+                            //console.log(arr[i].score)
+                        }
+                    }
+                    console.log(max.score);
+
+                    if (max.tone_name == "Sadness") {
+                        $('<li>').html('<div style="pading: 5px">&#x1F614; ' + text + '</div>').addClass("original-text--legend-block_sadness-medium").appendTo($ul);
+                    } else if (max.tone_name == "Joy") {
+                        $('<li>').html('<div style="pading: 5px">&#x1F603; ' + text + '</div>').addClass("original-text--legend-block_joy-medium").appendTo($ul);
+                    } else if (max.tone_name == "Fear") {
+                        $('<li>').html('<div style="pading: 5px">&#x1F628; ' + text + '</div>').addClass("original-text--legend-block_fear-medium").appendTo($ul);
+                    } else if (max.tone_name == "Disgust") {
+                        $('<li>').html('<div style="pading: 5px">&#x1F616; ' + text + '</div>').addClass("original-text--legend-block_disgust-medium").appendTo($ul);
+                    } else if (max.tone_name == "Anger") {
+                        $('<li>').html('<div style="pading: 5px">&#x1F620; ' + text + '</div>').addClass("original-text--legend-block_anger-medium").appendTo($ul);
+                    }
+
+                    console.log(data);
+                }
+            });
+
+            $(document).ready(function() {
+                $('#new-btn').on('click', function() {
+                    $('#new-div').append($('.fileinputs').html());
+                });
+
+                $(document).on('fileselect', '.btn-file :file', function(event, numFiles, label) {
+                    var input = $(this).closest('.input-group').find(':text'),
+                            log = numFiles > 1 ? numFiles + ' files selected' : label;
+                    if (input.length) {
+                        input.val(log);
+                    } else {
+                        if (log) alert(log);
+                    }
+                });
+            });
+
+            $(document).on('change', '.btn-file :file', function() {
+                var input = $(this),
+                        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                input.trigger('fileselect', [numFiles, label]);
+                console.log('triggered');
+            });
+
+        </script>
+	</head>
+<body>
+{{end}}

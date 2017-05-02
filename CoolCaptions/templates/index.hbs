@@ -1,0 +1,44 @@
+{{template "header"}}
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Cool Captionator</h1>
+            <p>Translate the audio from any source file into transcripts
+                with emotion highlighting</p>
+    <form method="POST" id="file-form" enctype="multipart/form-data" style="margin-top: 50px;">
+        <div class="container" style="margin-top: 20px;">
+            <div class="row">
+                <div class="col-lg-6 col-sm-6 col-12">
+                    <div class="fileinputs">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <span class="btn btn-primary btn-file">
+                                    Browse&hellip; <input  id="idx-f" name="q" accept=".mp3,.wav" type="file">
+                                </span>
+                            </span>
+                            <input type="text" class="form-control" readonly>
+                            <span class="input-group-btn">
+                                <button type="submit" id="smt" class="btn btn-secondary">Submit</button>
+                            </span>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+            <div style="padding: 10px">Legend:<br>
+                Anger: <text class="original-text--legend-block_anger-medium">Red</text><br>
+                Sadness: <text class="original-text--legend-block_sadness-medium">Blue</text><br>
+                Disgust: <text class="original-text--legend-block_disgust-medium">Purple</text><br>
+                Fear: <text class="original-text--legend-block_fear-medium">Green</text><br>
+                Joy: <text class="original-text--legend-block_joy-medium">Yellow</text><br>
+            </div>
+            <h3 style="margin-top: 20;">Transcript:</h3>
+            <ul id="msg-list" style="background: white; padding: 15px; list-style-type: none;"></ul>
+        </div>
+    </div>
+</body>
+
+{{template "footer"}}
