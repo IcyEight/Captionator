@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"github.com/liviosoares/go-watson-sdk/watson"
 	"github.com/liviosoares/go-watson-sdk/watson/speech_to_text"
-	//"github.com/liviosoares/go-watson-sdk/watson/tone_analyzer"
+	//"github.com/liviosoares/go-watson-sdk/watson/tone_analyzer" bugs with this, using node to rune tone analyzer
 	"io"
 	"log"
 	"sync"
@@ -47,7 +47,7 @@ func index(w http.ResponseWriter, req *http.Request) {
 	var s string = ""
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if req.Method == http.MethodPost {
-		// open
+
 		f, h, err := req.FormFile("q")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -55,14 +55,12 @@ func index(w http.ResponseWriter, req *http.Request) {
 		}
 		defer f.Close()
 
-		// read
 		bs, err := ioutil.ReadAll(f)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		// store on server
+		
 		dst, err := os.Create(filepath.Join("./audio/", h.Filename))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -80,15 +78,12 @@ func index(w http.ResponseWriter, req *http.Request) {
 		* Watson Client API
 		 */
 		c, err := speech_to_text.NewClient(watson.Config{})
-		//t, err := tone_analyzer.NewClient(watson.Config{})
 		if err != nil {
 			log.Printf("client failed %#v\n", err)
-			//return
 		}
 		output, stream, err := c.NewStream("", "audio/wav", map[string]interface{}{"continuous": true, "interim_results": false, "timestamps": true})
 		if err != nil {
 			log.Printf("stream failed %#v %s\n", err, err.Error())
-			//return
 		}
 
 		fn := mp3ToWav(h.Filename)
@@ -96,14 +91,12 @@ func index(w http.ResponseWriter, req *http.Request) {
 		g, err := os.Open("audio/" + fn)
 		if err != nil {
 			log.Printf("stream failed to open audio file %s %s\n", "test_data/speech.wav", err)
-			//return
 		}
 
 		go func() {
 			_, err = io.Copy(stream, g)
 			if err != nil {
 				log.Printf("io failed to copy audio file to API %s\n", err.Error())
-				//return
 			}
 		}()
 
@@ -111,7 +104,7 @@ func index(w http.ResponseWriter, req *http.Request) {
 		for (!done){
 			select {
 			case event, ok := <-output:
-				if !ok || len(event.Error) > 0 { // split wave files and run after each other?
+				if !ok || len(event.Error) > 0 {
 					log.Printf("failed to transcribe %#v %s\n", ok, event.Error)
 					done = true;
 					return
@@ -126,14 +119,6 @@ func index(w http.ResponseWriter, req *http.Request) {
 				output := execNode(command)
 
 				client.conn.WriteJSON(Obj{Analysis:output, Result:event.Results})
-
-				//tone, err := t.Tone(event.Results[0].Alternatives[0].Transcript, nil);
-				//if err != nil {
-				//	log.Println("failed to get transcript tone" + err.Error())
-				//	return
-				//}
-				//client.conn.WriteJSON(tone)
-
 			}
 		}
 	}
@@ -166,7 +151,6 @@ func execNode(cmd string) string {
 	if err != nil {
 		fmt.Printf("%s", err)
 	}
-	//log.Println("Result:" + string(res))
 	return string(res);
 }
 
