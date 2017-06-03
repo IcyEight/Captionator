@@ -1,3 +1,7 @@
+# Cool Captionator
+
+![alt](https://firefly-challengepost.netdna-ssl.com/usercontent/fill/333/222/cGhvdG9zL3Byb2R1Y3Rpb24vc29mdHdhcmVfdGh1bWJuYWlsX3Bob3Rvcy8wMDAvNTEwLzA5NS9kYXRhcy9vcmlnaW5hbC5wbmc=/Screen_Shot_2017-05-15_at_8.05.28_PM.png?signature=bd6927cd305ff2cef6a15db538959b2984ad15e4)
+
 ## Inspiration
 I was inspired to create Cool Captionator by working directly with a subject matter expert who was deaf. After discussing some issues he faced day to day, one of the more striking things he brought up was that deaf people have a difficult time understanding emotional tone from sub-titles or transcribed text from audio.
 ## What it does
